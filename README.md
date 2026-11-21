@@ -1,3 +1,7 @@
+## For AI agents, auditors and contributors
+
+Read `AGENTS.md` (hard rules), then `docs/PROJECT_LOG.md` (current status, known problems with IDs, suggested changes and a running updates list). Add an entry to the log with every change, audit or deploy. The sections below were written for the original prototype and are partly out of date (see D-04 in the log).
+
 # Charity Table Advertising App
 
 This repository contains the **original Perplexity interactive oval poker-table prototype** in `index.html`, plus a minimal Node.js server for Railway deployment.
