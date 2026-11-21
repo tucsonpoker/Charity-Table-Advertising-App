@@ -1,30 +1,22 @@
 'use strict';
-const fs=require('node:fs');
-const path=require('node:path');
-const assets={
- '/app-design.css':['text/css; charset=utf-8','app-design.css'],
- '/app-design.js':['text/javascript; charset=utf-8','app-design.js']
-};
-function asset(req,res){
- const item=assets[new URL(req.url,'http://localhost').pathname];
- if(!item)return false;
- if(req.method!=='GET'&&req.method!=='HEAD'){res.writeHead(405,{Allow:'GET, HEAD'});res.end();return true}
- const body=fs.readFileSync(path.join(__dirname,item[1]));
- res.writeHead(200,{'Content-Type':item[0],'Cache-Control':'public, max-age=300','X-Content-Type-Options':'nosniff'});
- res.end(req.method==='HEAD'?undefined:body);return true;
-}
-function transform(html){
- if(typeof html!=='string'||!html.includes('<!doctype html>'))return html;
- const authenticated=html.includes('<nav>')||html.includes('href="/workspace"');
- const lead=/CACTUS ·|MANAGER ·/.test(html);
- const nav=authenticated?'<nav aria-label="Main navigation"><a href="/workspace">My dashboard</a><a href="/sponsors">Sponsors</a><a href="/events">Tables &amp; advertising</a>'+(lead?'<a href="/team">Team settings</a>':'')+'<a href="/password">My account</a><button type="button" class="install-help" aria-expanded="false" aria-controls="phone-help">Save to phone</button><form method="post" action="/logout"><button type="submit">Sign out</button></form></nav>':'';
- html=html.replace(/<nav>[\s\S]*?<\/nav>/,nav);
- if(authenticated&&!html.includes('aria-label="Main navigation"'))html=html.replace('</header>',nav+'</header>');
- const help='<aside id="phone-help" hidden aria-label="Save to phone"><h2>Keep your workspace handy</h2><p>iPhone: open this page in Safari, choose Share, then Add to Home Screen. Android: open your browser menu and choose Add to Home screen or Install app, if offered.</p><p>Your phone may offer to save your password separately. Adding an icon does not save your password.</p><button type="button" class="close-help">Close instructions</button></aside>';
- html=html.replace('<main>','<main id="main-content" tabindex="-1">'+(authenticated?help:''));
- const head='<link rel="stylesheet" href="/app-design.css"><script src="/app-design.js" defer></script><meta name="theme-color" content="#123d32">';
- html=html.includes('</head>')?html.replace('</head>',head+'</head>'):html.replace('<header>',head+'<header>');
+const fs=require('node:fs'),path=require('node:path');
+const css=fs.readFileSync(path.join(__dirname,'redesign.css'),'utf8');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function navigation(user){return '<nav aria-label="Main navigation"><a href="/">Dashboard</a><a href="/events">Sell advertising</a><a href="/sponsors">Sponsors</a><a href="/workspace">My follow-ups</a>'+(user&&user.role!=='sales'?'<a href="/charities">Manage events</a><a href="/team">Team</a>':'')+'<a class="account-link" href="/password">Account</a><button type="button" class="install-help save-phone" aria-expanded="false" aria-controls="phone-help">Save to phone</button><form method="post" action="/logout"><button>Sign out</button></form></nav>'}
+function header(user){return '<header><div class="brand"><span class="brand-mark" aria-hidden="true">C</span><div><strong>Cactus Promotions</strong><small>Charity sponsorships</small></div></div>'+(user?navigation(user):'')+'</header>'}
+const help='<aside id="phone-help" hidden><h2>Your workspace, one tap away</h2><p>iPhone: in Safari, open Share and choose Add to Home Screen. Android: use your browser menu to choose Add to Home screen or Install app, when offered.</p><p>Saving an icon and saving your password are separate actions. Your phone controls password saving.</p><button class="close-help" type="button">Close</button></aside>';
+function transform(html,context={}){
+ if(typeof html!=='string'||!html.toLowerCase().includes('<!doctype html>'))return html;
+ const inferred=html.includes('<nav>')||html.includes('href="/workspace"');
+ const user=context.user||(inferred?{role:/CACTUS ·/.test(html)?'cactus':/MANAGER ·/.test(html)?'manager':'sales'}:null);
+ html=html.replace(/<header>[\s\S]*?<\/header>/,header(user));
+ // Inline the app stylesheet: legacy workspace CSP did not permit external CSS.
+ const assets='<style data-design="cactus-v3">'+css+'</style><script src="/app-design.js" defer></script>';
+ html=html.includes('</head>')?html.replace('</head>',assets+'</head>'):html.replace('<header>',assets+'<header>');
+ html=html.replace(/<main(?:\s[^>]*)?>/,'<main id="main-content" tabindex="-1">'+(user?help:''));
  html=html.replace('<header>','<a class="skip-link" href="#main-content">Skip to main content</a><header>');
  return html;
 }
-module.exports={asset,transform};
+function page(user,title,content){return transform('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#123e33"><title>'+esc(title)+' · Cactus Promotions</title></head><body><header></header><main>'+content+'</main><footer>Cactus Promotions · A little table space. A bigger difference.</footer></body></html>',{user})}
+function asset(req,res){const p=new URL(req.url,'http://localhost').pathname;if(p!=='/app-design.js')return false;if(!['GET','HEAD'].includes(req.method)){res.writeHead(405,{Allow:'GET, HEAD'});res.end();return true}res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8','X-Content-Type-Options':'nosniff','Cache-Control':'public,max-age=120'});res.end(req.method==='HEAD'?undefined:fs.readFileSync(path.join(__dirname,'app-design.js')));return true}
+module.exports={transform,page,asset,esc};
