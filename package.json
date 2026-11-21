@@ -1,0 +1,12 @@
+{
+  "name": "charity-table-advertising-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Perplexity interactive oval-table preview",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
