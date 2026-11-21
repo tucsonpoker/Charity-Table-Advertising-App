@@ -1,3 +1,7 @@
+
+
+**Start here:** `docs/PROJECT_LOG.md` holds the current status, the problem register (with permanent IDs) and a running list of updates. Read it after this file, and add an entry there for every change, audit or deploy.
+
 # Agent handoff
 
 ## Ownership and deployment
