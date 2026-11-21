@@ -16,6 +16,7 @@ http.createServer=function(handler){
  const u=await experience.user(req);
  const writeHead=res.writeHead;
  res.writeHead=function(status,headers){
+  if(headers&&headers['Referrer-Policy']==='no-referrer')headers['Referrer-Policy']='same-origin';
  if(headers&&headers['Content-Security-Policy']&&!headers['Content-Security-Policy'].includes('script-src'))headers['Content-Security-Policy']+="; script-src 'self'";
  return writeHead.call(this,status,headers);
  };
