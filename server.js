@@ -11,13 +11,23 @@ const ui = require('./lib/ui');
 const PUBLIC = path.join(__dirname, 'public');
 const STATIC = { '/app.css': 'text/css', '/app.js': 'text/javascript', '/manifest.webmanifest': 'application/manifest+json', '/icon.svg': 'image/svg+xml', '/icon-180.png': 'image/png', '/icon-512.png': 'image/png' };
 const CSP = "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
-const baseHeaders = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'DENY', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()' };
+const baseHeaders = { 'Strict-Transport-Security': 'max-age=31536000', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'DENY', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()' };
 
 class HttpError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
 const fail = (status, msg) => { throw new HttpError(status, msg); };
 
 // ---------- request helpers ----------
-function cookies(req) { return Object.fromEntries(String(req.headers.cookie || '').split(/;\s*/).filter(Boolean).map((c) => { const i = c.indexOf('='); return [c.slice(0, i), decodeURIComponent(c.slice(i + 1))]; })); }
+// Never throws: a malformed cookie (for example "sid=%") is ignored instead of crashing the request.
+function cookies(req) {
+  const out = {};
+  for (const c of String(req.headers.cookie || '').split(/;\s*/)) {
+    const i = c.indexOf('='); if (i < 1) continue;
+    const k = c.slice(0, i).trim(); let v = c.slice(i + 1);
+    try { v = decodeURIComponent(v); } catch { continue; }
+    if (!(k in out)) out[k] = v;
+  }
+  return out;
+}
 async function readForm(req) {
   let raw = '';
   for await (const chunk of req) { raw += chunk; if (raw.length > 200000) fail(413, 'That form was too large.'); }
@@ -134,13 +144,15 @@ function match(method, pathname) {
 }
 
 async function handle(req, res) {
-  const url = new URL(req.url, 'http://local');
-  const ctx = { req, res, url, setCookies: [], cookies: cookies(req), params: [] };
+  let url;
+  try { url = new URL(req.url, 'http://local'); } catch { res.writeHead(400, { 'Content-Type': 'text/plain' }); return res.end('Bad request'); }
+  const ctx = { req, res, url, setCookies: [], cookies: {}, params: [] };
   try {
+    ctx.cookies = cookies(req);
     if (url.pathname === '/health') { await db.q('SELECT 1'); res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('ok'); }
     if (req.method === 'GET' && STATIC[url.pathname]) {
       const file = path.join(PUBLIC, url.pathname.slice(1));
-      res.writeHead(200, { ...baseHeaders, 'Content-Type': STATIC[url.pathname] + (STATIC[url.pathname].startsWith('text') ? '; charset=utf-8' : ''), 'Cache-Control': url.search ? 'public, max-age=31536000, immutable' : 'public, max-age=3600' });
+      res.writeHead(200, { ...baseHeaders, 'Content-Type': STATIC[url.pathname] + (STATIC[url.pathname].startsWith('text') ? '; charset=utf-8' : ''), 'Cache-Control': url.searchParams.get('v') === ui.ASSET_V ? 'public, max-age=31536000, immutable' : 'no-cache' });
       return res.end(fs.readFileSync(file));
     }
     if (!['GET', 'POST', 'HEAD'].includes(req.method)) fail(405, 'That action is not supported.');
@@ -189,8 +201,15 @@ async function handle(req, res) {
 }
 
 module.exports = { handle, app };
+// Last-resort safety net: log and keep serving rather than letting one bad request stop the app.
+process.on('unhandledRejection', (e) => console.error('Unhandled rejection:', e && e.message));
+process.on('uncaughtException', (e) => console.error('Uncaught exception:', e && e.message));
 if (require.main === module) {
   db.migrate().then(() => {
-    http.createServer(handle).listen(Number(process.env.PORT || 3000), '0.0.0.0', () => console.log('Cactus Charity Tables v3 listening'));
+    const server = http.createServer((req, res) => {
+      handle(req, res).catch((e) => { console.error('Unhandled request error:', e && e.message); try { if (!res.headersSent) res.writeHead(500, { 'Content-Type': 'text/plain' }); res.end('Something went wrong. Please try again.'); } catch { /* socket gone */ } });
+    });
+    server.on('clientError', (err, socket) => { try { socket.end('HTTP/1.1 400 Bad Request\r\n\r\n'); } catch { /* ignore */ } });
+    server.listen(Number(process.env.PORT || 3000), '0.0.0.0', () => console.log('Cactus Charity Tables v3 listening'));
   }).catch((e) => { console.error('Database setup failed:', e.message); process.exit(1); });
 }

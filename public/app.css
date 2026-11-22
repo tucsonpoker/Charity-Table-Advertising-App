@@ -1,7 +1,7 @@
 /* Cactus Charity Tables — v3 design system. Mobile first. Brand color comes from the charity (--brand). */
 :root{
   --brand:#166546;--brand-rgb:22,101,70;--brand-hi:#4f8c74;
-  --bg:#f5f4ef;--surface:#fff;--surface-2:#faf9f6;--ink:#15221b;--ink-2:#5c6a63;--ink-3:#8a958f;--line:#e8e6df;
+  --bg:#f5f4ef;--surface:#fff;--surface-2:#faf9f6;--ink:#15221b;--ink-2:#4f5c55;--ink-3:#5f6b65;--line:#e8e6df;
   --ok:#1e7a4c;--warn:#b54708;--warn-bg:#fff4e5;--err:#b42318;--err-bg:#fef3f2;
   --felt:#dde8da;--t-open:#f7faf5;--t-pend:#ffd36a;--t-sold:var(--brand);
   --r-sm:10px;--r:16px;--r-lg:24px;
@@ -26,7 +26,7 @@ p{margin:0 0 .75rem}
 :focus-visible{outline:3px solid rgba(var(--brand-rgb),.45);outline-offset:2px;border-radius:6px}
 .ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .ic-accent{color:var(--brand)}.ic-warn{color:var(--warn)}
-.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;font-weight:700;color:var(--ink-2);margin:0 0 .3rem}
+.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;font-weight:700;color:var(--ink-2);margin:0 0 .3rem}
 
 /* ---------- App frame ---------- */
 .app{min-height:100vh;min-height:100dvh}
@@ -42,7 +42,7 @@ p{margin:0 0 .75rem}
 .switch{max-width:46%}.switch select{height:38px;padding:0 30px 0 10px;font-size:.85rem;border-radius:10px}
 .content{max-width:1040px;margin:0 auto;padding:18px 16px calc(var(--tabs-h) + 28px + env(safe-area-inset-bottom));outline:none}
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:space-around;background:rgba(255,255,255,.92);backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;color:var(--ink-3);font-size:.7rem;font-weight:600;border-radius:12px;min-height:48px;transition:color .2s}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;color:var(--ink-2);font-size:.75rem;font-weight:600;border-radius:12px;min-height:48px;transition:color .2s}
 .tab:hover{text-decoration:none;color:var(--ink)}
 .tab .ic{width:23px;height:23px;transition:transform .25s var(--ease)}
 .tab.on{color:var(--brand)}.tab.on .ic{transform:translateY(-1px) scale(1.06)}
@@ -75,7 +75,7 @@ p{margin:0 0 .75rem}
 .hero p{max-width:52ch}.hero .btn-primary{background:#fff;color:var(--brand);margin-top:8px}
 .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .count{flex:none;text-align:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:8px 12px;min-width:84px}
-.count strong{display:block;font-size:1.7rem;line-height:1;font-variant-numeric:tabular-nums}.count span{font-size:.72rem;font-weight:600}.count small{display:block;font-size:.66rem;opacity:.75;margin-top:2px}
+.count strong{display:block;font-size:1.7rem;line-height:1;font-variant-numeric:tabular-nums}.count span{font-size:.75rem;font-weight:600}.count small{display:block;font-size:.75rem;opacity:.9;margin-top:2px}
 .count[data-late]{background:rgba(255,200,80,.22)}
 .hero-stats{display:flex;gap:28px;margin:20px 0 12px;position:relative;z-index:1}.hero .label{color:rgba(255,255,255,.72)}
 .big{font-size:2rem;font-weight:780;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}.big small{font-size:1rem;opacity:.7;font-weight:600}
@@ -176,7 +176,7 @@ details.add[open]>summary{margin-bottom:12px}
 .code-pending{background:var(--t-pend);border-color:transparent}.code-sold{background:var(--brand);color:#fff;border-color:transparent}
 .lockbar{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:#eef0f6;color:#2d3a58;margin-bottom:14px;font-size:.92rem}
 .steps{list-style:none;display:flex;gap:4px;margin:6px 0 14px;padding:0;counter-reset:s}
-.steps li{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.7rem;color:var(--ink-3);text-align:center;position:relative}
+.steps li{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.75rem;color:var(--ink-3);text-align:center;position:relative}
 .steps li span{display:grid;place-items:center;width:28px;height:28px;min-width:28px;max-width:28px;flex:none;padding:0;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--line);font-weight:700;font-size:.78rem;z-index:1}
 .steps li+li::before{content:"";position:absolute;top:14px;right:50%;width:100%;height:2px;background:var(--line)}
 .steps li.ok span,.steps li.now span{background:var(--brand);border-color:var(--brand);color:#fff}.steps li.ok::before,.steps li.now::before{background:var(--brand)}
@@ -216,7 +216,7 @@ body.bare{background:#0f1c16}
 .auth-card{width:100%;max-width:420px;background:#fff;border-radius:24px;padding:24px 22px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);position:relative;animation:rise .7s .08s var(--ease) both}
 .auth-card h2{font-size:1.3rem;margin-bottom:12px}
 .auth-card .stack{margin-bottom:10px}.auth-card .stack>.btn{align-self:stretch}
-.auth-foot{color:rgba(255,255,255,.55);font-size:.78rem;margin-top:22px;position:relative}
+.auth-foot{color:rgba(255,255,255,.8);font-size:.78rem;margin-top:22px;position:relative}
 .auth .empty{border:0;padding:12px 0;margin:0}
 
 /* Motion */
@@ -262,3 +262,11 @@ body.bare{background:#0f1c16}
 @media(min-width:900px){.toast{bottom:28px}}
 @keyframes toast{0%{opacity:0;transform:translate(-50%,14px)}8%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,10px);visibility:hidden}}
 .toast{width:max-content}
+
+/* audit fixes: readable text and comfortable tap targets */
+.tap{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 4px;font-weight:600}
+.money h2{margin-bottom:2px}.small{font-size:.84rem}
+.money-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 4px}
+.money-grid div{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px}
+.money-grid dt{font-size:.78rem;color:var(--ink-2);font-weight:600}.money-grid dd{margin:4px 0 0;font-size:1.2rem;font-weight:780;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.money-grid .net{background:rgba(var(--brand-rgb),.08);border-color:rgba(var(--brand-rgb),.25)}.money-grid .net dd{color:var(--brand)}.money-grid .neg dd{color:#a1271b}

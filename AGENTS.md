@@ -28,13 +28,26 @@ The owner is a non-programmer. The owner forbids delegating coding to Railway cl
 - "View as" is read-only; every POST is blocked except stopping View as.
 - Escape all user content. Never log notes, passwords, invite or reset tokens.
 
+## Rules added after the 2026-11-21 audit
+- Never cache-bust by hand: `lib/ui.js` computes `ASSET_V` from the contents of `public/app.css` and `public/app.js`; only a matching `?v=` gets a long cache.
+- Request code must never throw outside the `try` in `handle()`; there is also a last-resort handler. Keep `npm test` passing (it includes a malformed-cookie check).
+- Sign-in lockout is per device+email (8), per device (40), per email (100). Only failures count; success clears the device+email counter. Visitor address = last X-Forwarded-For entry.
+- Table charges (costs to the charity, lead/Cactus only): Standard $150, Center only $550, Platinum $600. Net = sold sponsorships minus table charges. Never mix charges into gross.
+- Asking defaults: edge $299, full center $1,999. Split-center prices have no default; the lead must enter one. Splits apply to Platinum only.
+- Artwork files must match their type by content (`image.looksLike`).
+- The demo charity (slug `demo`) is kept on purpose for sales demos. Do not remove it.
+
+## Tests
+- `npm test`: fast unit checks, no database.
+- `node test/e2e.js` then `node test/e2e-audit.js`: browser walkthroughs against a running app with a fresh database (see file headers).
+
 ## Configuration
 DATABASE_URL, BOOTSTRAP_ADMIN_EMAIL, BOOTSTRAP_ADMIN_PASSWORD; optional PORT and PGSSL. Never commit values.
 
 ## Not yet done
 - No email delivery: reset and invite links are shared by the lead or admin.
 - Not tested on real iPhone/Android devices.
-- No automated test suite in the repo yet (a 28-check browser run was done locally; see `docs/UPDATES.md`).
+- Volunteer limit is 25 per charity in code; the requirements say 12 pending the owner's confirmation.
 
 ## Deployment / rollback
 Push to `main` triggers Railway deploy. Check logs for "Cactus Charity Tables v3 listening" and `/health`. Roll back via Railway to the last working deployment only with owner approval; additive tables can stay.

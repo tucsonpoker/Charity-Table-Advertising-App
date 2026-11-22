@@ -16,6 +16,18 @@
   });
   window.addEventListener('pageshow', function () { $$('form[data-sent]').forEach(function (f) { delete f.dataset.sent; }); $$('[aria-busy]').forEach(function (b) { b.removeAttribute('aria-busy'); }); });
 
+  // Show a block only when another field has one of the listed values, e.g. data-show-when="kind=platinum".
+  var showBoxes = $$('[data-show-when]');
+  var syncShow = function () {
+    showBoxes.forEach(function (box) {
+      var rule = box.getAttribute('data-show-when').split('='), f = box.closest('form');
+      var input = f && f.querySelector('[name="' + rule[0] + '"]');
+      var on = !!input && rule[1].split(',').indexOf(input.value) !== -1 && !(box.parentElement && box.parentElement.closest('[hidden]'));
+      box.hidden = !on;
+      box.querySelectorAll('input,select').forEach(function (el) { el.disabled = !on; if (el.name === 'piece_price') el.required = on; });
+    });
+  };
+  if (showBoxes.length) { document.addEventListener('change', syncShow); syncShow(); }
   $$('select[data-autosubmit]').forEach(function (s) { s.addEventListener('change', function () { s.form.requestSubmit ? s.form.requestSubmit() : s.form.submit(); }); });
 
   // Sell form: show new-sponsor fields only when "New sponsor" is chosen.

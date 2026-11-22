@@ -12,6 +12,14 @@ Template:
 - Not tested: <what was not checked>
 - Next suggested: <one or two items>
 
+### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), fixes from the Claude audit (7.3/10)
+- In plain words: A bad request can no longer crash the app, phones always get the newest look, leads can add up to 20 tables at once (Platinum by default), money figures are correct and leads see costs and net, strangers can't lock someone out, and text is easier to read.
+- Changed: `server.js` (safe cookies, last-resort handlers, HSTS, cache rule), `lib/ui.js` (content-fingerprinted assets), `lib/security.js` + `lib/routes-public.js` (sign-in failure counters, real visitor address), `lib/routes-main.js` (Add tables 1-20, split-center price required, Platinum-only splits, still-available fix, lead-only Money card), `lib/image.js` + `lib/routes-sales.js` (file content check), `public/app.css` + `public/app.js` (contrast, sizes, tap targets, show/hide fields), `test/` (unit, e2e, e2e-audit), `package.json`, `AGENTS.md`.
+- Findings touched: audit items 1, 2, 3, 4 (no invented split prices; owner did not set them, so the lead enters them), 5, 6, 7, 8 (cost/net built; volunteer limit still 25 pending owner), 9, 10 (HSTS, file check; demo passwords kept visible on purpose for demos).
+- Checked how: `npm test` 7/7; browser walkthrough 28/28; audit checks 14/14 (bad cookie, 12 tables in one save, split price, still available, renamed file refused, lockout does not block the real owner, volunteer cannot see money); contrast and tap-size scan of 15 phone pages.
+- Not tested: real phones; heavy use.
+- Next suggested: owner to confirm volunteer limit (12 or 25) and whether table charges ever differ per charity.
+
 ### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), fixes 6 and 10-14 from the open-items list
 - In plain words: The header now always matches the charity you are looking at, long names show in full, pop-up messages no longer cover the top bar, sponsor uploads name the sponsor, the start-up warning is gone and the old unused code was removed.
 - Changed: `server.js` (useEvent), `lib/routes-main.js`, `lib/routes-sales.js`, `lib/production.js`, `public/app.css`, new `railway.json` (start with `node server.js`), `package.json` check script, `AGENTS.md`; deleted `legacy/`.
