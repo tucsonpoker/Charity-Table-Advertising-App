@@ -12,6 +12,14 @@ Template:
 - Not tested: <what was not checked>
 - Next suggested: <one or two items>
 
+### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), real-looking tables and cleaner Tables page
+- In plain words: Tables now look like real poker tables (green felt, padded rail, numbered spaces), each card shows sold/reserved/open at a glance, and the clutter was moved off the Tables page.
+- Changed: `lib/ui.js` (table drawing), `lib/routes-main.js` (Tables page, new `/tables/new` and `/event` pages, event switch on More), `public/app.css`.
+- Findings touched: owner feedback "clunky and unserious" on the Tables page.
+- Checked how: 28-check browser run passed; phone screenshots reviewed.
+- Not tested: real phones.
+- Next suggested: owner review on a phone.
+
 ### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), full v3 rebuild
 - In plain words: The whole app was rebuilt as a clean, fast phone app with a demo charity and a read-only "View as" for the admin.
 - Changed: new `server.js`, `lib/*`, `public/*`; old code moved to `legacy/`; `AGENTS.md`, `README.md`; added `busboy`.
