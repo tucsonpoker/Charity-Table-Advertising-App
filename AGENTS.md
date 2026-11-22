@@ -1,35 +1,39 @@
-**Running updates:** add every new entry at the top of `docs/UPDATES.md` (a short file, newest first).
-
-**Start here:** `docs/PROJECT_LOG.md` holds the current status, the problem register (with permanent IDs) and a running list of updates. Read it after this file, and add an entry there for every change, audit or deploy.
+**Running updates:** add every new entry at the top of `docs/UPDATES.md` (a short file, newest first). `docs/PROJECT_LOG.md` is history plus the problem register; do not add running updates there.
 
 # Agent handoff
 
 ## Ownership and deployment
-Repository: tucsonpoker/Charity-Table-Advertising-App. Railway project: Charity Table Advertising App. Node >=20 and PostgreSQL. `npm install`, `npm start`; syntax check: `node --check server.js && node --check workspace.js && node --check full_app.js`.
+Repository: tucsonpoker/Charity-Table-Advertising-App. Railway project: Charity Table Advertising App (auto-deploys from `main`). Node >=20 and PostgreSQL. `npm install`, `npm start`. Syntax check: `for f in server.js lib/*.js public/app.js; do node --check $f; done`.
 
-The user explicitly forbids delegating coding to Railway cloud coding workers or assistants. Write code directly. Use Railway only for hosting, configuration, logs and deployment.
+The owner is a non-programmer. The owner forbids delegating coding to Railway cloud coding workers or assistants. Write code directly. Use Railway only for hosting, configuration, logs and deployment. Never change Railway variables, secrets or the production database by hand, and never ask the owner for passwords or tokens.
 
-## Architecture
-`full_app.js` is the legacy server with inventory, charity management, authentication, sales and artwork status. `server.js` adapts its request listener once to compose the separately maintained `workspace.js` handler and add a workspace navigation link. The temporary adapter restores http.createServer immediately; refactor to an explicit exported app handler in a later reviewed change. `index.html` is the original table prototype, not the authenticated workspace.
+## Architecture (v3, 2026-11-21)
+- `server.js`: one explicit HTTP server and router. Security headers (strict CSP, `script-src 'self'`, no inline scripts), same-origin check, CSRF token (HMAC of session id) on every signed-in POST, read-only enforcement while an admin is in "View as".
+- `lib/db.js`: pool plus additive migrations only (CREATE/ALTER ... IF NOT EXISTS). Never drop or rewrite existing data.
+- `lib/security.js`: scrypt password hashes (format unchanged from v1), tokens, CSRF, rate limiter, escaping.
+- `lib/ui.js`: layout shell (desktop sidebar, phone bottom tabs), components, charity brand theming, poker-table SVG.
+- `lib/routes-public.js` sign-in, branded `/c/:slug`, invites (`/join`), password reset, sponsor upload link `/art/:token`.
+- `lib/routes-main.js` home, events, tables. `lib/routes-sales.js` selling, artwork, approvals, sponsors, notes, reminders, my list. `lib/production.js` submit → proof → approve → production. `lib/routes-admin.js` team, Cactus admin, View as.
+- `lib/demo.js`: seeds the demo charity (slug `demo`) once; demo passwords are random and shown only on `/admin`.
+- `lib/image.js`: artwork size check. `public/`: CSS, JS, manifest and icons.
+- `legacy/`: the previous v1/v2 code, kept for reference only. Not loaded.
 
-## Data and privacy
-Workspace migrations are additive CREATE TABLE/INDEX IF NOT EXISTS operations on first authenticated workspace request. New tables: workspace_prospects (event and owner), workspace_notes (author and explicit visibility), workspace_reminders (owner). Private notes are filtered in SQL by author; managers and cactus administrators do NOT get access to others' private notes. Reminders are owner-only. Calendar links include only title and times, never note bodies automatically. Calendar creation is optional, user-confirmed, not OAuth synchronization. New workspace forms use a session-bound CSRF token. Escape all rendered user content. Never log private notes, credentials, invitation or reset tokens.
-
-IMPORTANT LIMITATION: existing user memberships and legacy sponsor directory are charity-scoped, NOT event-membership-scoped. Workspace prospects/notes are partitioned by selected event, but every user of a charity can select that charity's events. Explicit per-event membership and corresponding legacy route enforcement remain required before claiming strict team isolation across events. Do not misrepresent this.
+## Rules that must hold
+- Roles: Cactus admin; charity lead (manager); volunteer (sales). Volunteers never see costs or profit.
+- Private notes are visible only to their author, filtered in SQL. Nobody else, including admins and "View as", sees them.
+- Reminders are owner-only. Google Calendar links carry only title and time.
+- Team data is scoped by event membership (`event_members`).
+- Invite links work once, collect full name, email and password; email is the sign-in name.
+- "View as" is read-only; every POST is blocked except stopping View as.
+- Escape all user content. Never log notes, passwords, invite or reset tokens.
 
 ## Configuration
-Existing variable names: DATABASE_URL, BOOTSTRAP_ADMIN_EMAIL, BOOTSTRAP_ADMIN_PASSWORD; optional PORT and PGSSL. Never commit their values. Bootstrap creates the first cactus admin only when absent. Do not reset production data. Preserve current inventory pricing and sale flows.
+DATABASE_URL, BOOTSTRAP_ADMIN_EMAIL, BOOTSTRAP_ADMIN_PASSWORD; optional PORT and PGSSL. Never commit values.
 
-## Outstanding work / release gates
-- Invitation-only signup collecting full name and email, single-use-at-redemption tokens, expiry and atomic redemption; remove manager-created temporary password flow only after migration.
-- Password recovery with configured and tested delivery, request throttling and anti-enumeration.
-- Per-event memberships enforced throughout legacy routes; validate role/owner behavior with integration tests.
-- Link prospects to existing sponsors and conversion workflows to avoid duplicate directories.
-- Better local-time reminder input/display; current first increment explicitly uses timezone-bearing ISO strings and UTC display.
-- Optional photo handling and home-screen guidance/install assets.
-- Automated PostgreSQL tests for private note exclusion, cross-charity/event access, CSRF, ownership and regression of sales flows.
-- Test deployment health and real iPhone/Android usability. No such tests have been run for this commit at authoring time. No claim of production readiness.
-- Legacy auth still needs rate limiting, complete CSRF coverage and security review.
+## Not yet done
+- No email delivery: reset and invite links are shared by the lead or admin.
+- Not tested on real iPhone/Android devices.
+- No automated test suite in the repo yet (a 28-check browser run was done locally; see `docs/UPDATES.md`).
 
 ## Deployment / rollback
-Inspect current GitHub branch/commit and Railway source before writes. Obtain user confirmation for exact writes. A main push may trigger connected Railway auto-deploy. Check build/runtime logs and `/health`, then authenticated flows. Roll back via Railway to the last known working deployment after explicit approval; new additive tables can remain, never drop them to roll back. Record actual results rather than implying a successful deployment equals working features.
+Push to `main` triggers Railway deploy. Check logs for "Cactus Charity Tables v3 listening" and `/health`. Roll back via Railway to the last working deployment only with owner approval; additive tables can stay.

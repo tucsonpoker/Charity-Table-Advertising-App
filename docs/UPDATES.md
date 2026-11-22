@@ -12,6 +12,14 @@ Template:
 - Not tested: <what was not checked>
 - Next suggested: <one or two items>
 
+### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), full v3 rebuild
+- In plain words: The whole app was rebuilt as a clean, fast phone app with a demo charity and a read-only "View as" for the admin.
+- Changed: new `server.js`, `lib/*`, `public/*`; old code moved to `legacy/`; `AGENTS.md`, `README.md`; added `busboy`.
+- Findings touched: D-04 (README out of date) fixed; per-event membership, invite-only signup, password reset, rate limiting and full CSRF now built.
+- Checked how: local PostgreSQL plus a 28-check Playwright browser run on phone and desktop sizes (sell, reserve, price approval, artwork upload and sponsor link, submit with unsold spaces, proof approve, production, invites single-use, private notes hidden, View as read-only, password reset): all passed, no browser errors. Migration from the old database was also tried once and worked.
+- Not tested: real iPhone/Android devices; email delivery (there is none, links are shared by hand).
+- Next suggested: try the demo on a real phone; add an automated test suite to the repo.
+
 ### 2026-11-21, America/Phoenix, Claude (Sonnet 5.5), moved running updates to this file
 - In plain words: One AI reader could not reach the updates at the bottom of the long log, so new updates now live in this short file.
 - Changed: added `docs/UPDATES.md` and a line in `AGENTS.md` (both added by the owner by hand on GitHub).
