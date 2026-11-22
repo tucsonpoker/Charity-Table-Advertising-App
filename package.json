@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "check": "node --check full_app.js"
+    "check": "for f in server.js lib/*.js public/app.js; do node --check $f || exit 1; done"
   },
   "dependencies": {
     "busboy": "^1.6.0",

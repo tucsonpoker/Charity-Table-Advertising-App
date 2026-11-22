@@ -101,12 +101,23 @@ async function buildContext(ctx) {
   ctx.charity = charityId ? await db.one('SELECT id,name,slug,mission,brand_color,(logo_data IS NOT NULL) has_logo,is_demo FROM charities WHERE id=$1', [charityId]) : null;
 }
 
+// Keep the header, theme and Tables tab in step with the record being viewed
+// (for example an admin opening another charity's table from the Admin page).
+async function useEvent(ctx, eventId) {
+  if (!eventId || ctx.event?.id === eventId) return;
+  const e = (ctx.events || []).find((x) => x.id === eventId);
+  if (!e) return;
+  ctx.event = e;
+  ctx.charity = await db.one('SELECT id,name,slug,mission,brand_color,(logo_data IS NOT NULL) has_logo,is_demo FROM charities WHERE id=$1', [e.charity_id]);
+  ctx.setCookies.push(`ev=${e.id}; Path=/; Secure; SameSite=Lax; HttpOnly; Max-Age=31536000`);
+}
+
 // ---------- router ----------
 const routes = [];
 const app = {
   get: (p, h, o = {}) => routes.push({ m: 'GET', p, h, o }),
   post: (p, h, o = {}) => routes.push({ m: 'POST', p, h, o }),
-  db, sec, ui, access, fail, HttpError, send, redirect, render, binary, readForm, readMultipart, buildContext, loadUser,
+  db, sec, ui, access, fail, HttpError, send, redirect, render, binary, readForm, readMultipart, buildContext, loadUser, useEvent,
 };
 require('./lib/routes-public')(app);
 require('./lib/routes-main')(app);

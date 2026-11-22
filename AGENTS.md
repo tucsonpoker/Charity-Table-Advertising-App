@@ -16,7 +16,8 @@ The owner is a non-programmer. The owner forbids delegating coding to Railway cl
 - `lib/routes-main.js` home, events, tables. `lib/routes-sales.js` selling, artwork, approvals, sponsors, notes, reminders, my list. `lib/production.js` submit → proof → approve → production. `lib/routes-admin.js` team, Cactus admin, View as.
 - `lib/demo.js`: seeds the demo charity (slug `demo`) once; demo passwords are random and shown only on `/admin`.
 - `lib/image.js`: artwork size check. `public/`: CSS, JS, manifest and icons.
-- `legacy/`: the previous v1/v2 code, kept for reference only. Not loaded.
+- The previous v1/v2 code was removed on 2026-11-21; it is in git history before commit 223e105 if ever needed.
+- `railway.json`: start command `node server.js` (starts without npm).
 
 ## Rules that must hold
 - Roles: Cactus admin; charity lead (manager); volunteer (sales). Volunteers never see costs or profit.

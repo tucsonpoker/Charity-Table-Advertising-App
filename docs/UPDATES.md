@@ -12,6 +12,14 @@ Template:
 - Not tested: <what was not checked>
 - Next suggested: <one or two items>
 
+### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), fixes 6 and 10-14 from the open-items list
+- In plain words: The header now always matches the charity you are looking at, long names show in full, pop-up messages no longer cover the top bar, sponsor uploads name the sponsor, the start-up warning is gone and the old unused code was removed.
+- Changed: `server.js` (useEvent), `lib/routes-main.js`, `lib/routes-sales.js`, `lib/production.js`, `public/app.css`, new `railway.json` (start with `node server.js`), `package.json` check script, `AGENTS.md`; deleted `legacy/`.
+- Findings touched: open items 6, 10, 11, 12, 13, 14 fixed.
+- Checked how: 28-check browser run passed; screenshots reviewed; activity text checked in the test database.
+- Not tested: real phones.
+- Next suggested: items 1-5 and 7-9 from the open-items list.
+
 ### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), real-looking tables and cleaner Tables page
 - In plain words: Tables now look like real poker tables (green felt, padded rail, numbered spaces), each card shows sold/reserved/open at a glance, and the clutter was moved off the Tables page.
 - Changed: `lib/ui.js` (table drawing), `lib/routes-main.js` (Tables page, new `/tables/new` and `/event` pages, event switch on More), `public/app.css`.
