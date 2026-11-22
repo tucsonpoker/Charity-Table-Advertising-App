@@ -47,7 +47,7 @@ DATABASE_URL, BOOTSTRAP_ADMIN_EMAIL, BOOTSTRAP_ADMIN_PASSWORD; optional PORT and
 ## Not yet done
 - No email delivery: reset and invite links are shared by the lead or admin.
 - Not tested on real iPhone/Android devices.
-- Volunteer limit is 25 per charity in code; the requirements say 12 pending the owner's confirmation.
+- Volunteer limit is 12 active volunteers per charity (lead not counted; pending invitations count), set by `VOLUNTEER_LIMIT` in `lib/db.js`. Owner confirmed 2026-11-21. Table charges are the same for every charity (owner confirmed).
 
 ## Deployment / rollback
 Push to `main` triggers Railway deploy. Check logs for "Cactus Charity Tables v3 listening" and `/health`. Roll back via Railway to the last working deployment only with owner approval; additive tables can stay.

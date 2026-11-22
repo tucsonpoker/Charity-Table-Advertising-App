@@ -12,6 +12,14 @@ Template:
 - Not tested: <what was not checked>
 - Next suggested: <one or two items>
 
+### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), volunteer limit set to 12
+- In plain words: Each charity can now have up to 12 active volunteers (the lead isn't counted); the Team page shows how many spots are used, and leads can cancel an invitation to free a spot.
+- Changed: `lib/db.js` (VOLUNTEER_LIMIT, volunteerCount), `lib/routes-admin.js` (limit on invite and reactivate, spots-used line, Cancel invitation), `lib/routes-public.js` (limit checked again when someone joins), `public/app.css` (invitation row layout), new `test/e2e-volunteers.js`, `AGENTS.md`, requirements doc.
+- Findings touched: audit item 8 volunteer limit, now closed at 12 (owner confirmed). Owner also confirmed table charges are the same for all charities, so they stay fixed. Table limit stays at 20 per save.
+- Checked how: `npm test` 7/7; browser walkthrough 28/28; audit checks 14/14; new volunteer-limit checks 8/8 (13th invite refused, cancel frees a spot, full team can't join, reactivation past limit refused); Team page screenshot reviewed.
+- Not tested: real phones.
+- Next suggested: confirm Railway database backups.
+
 ### 2026-11-21, America/Phoenix, Perplexity Computer (Claude Opus 5.5), fixes from the Claude audit (7.3/10)
 - In plain words: A bad request can no longer crash the app, phones always get the newest look, leads can add up to 20 tables at once (Platinum by default), money figures are correct and leads see costs and net, strangers can't lock someone out, and text is easier to read.
 - Changed: `server.js` (safe cookies, last-resort handlers, HSTS, cache rule), `lib/ui.js` (content-fingerprinted assets), `lib/security.js` + `lib/routes-public.js` (sign-in failure counters, real visitor address), `lib/routes-main.js` (Add tables 1-20, split-center price required, Platinum-only splits, still-available fix, lead-only Money card), `lib/image.js` + `lib/routes-sales.js` (file content check), `public/app.css` + `public/app.js` (contrast, sizes, tap targets, show/hide fields), `test/` (unit, e2e, e2e-audit), `package.json`, `AGENTS.md`.

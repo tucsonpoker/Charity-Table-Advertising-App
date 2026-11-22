@@ -7,7 +7,7 @@ Preserve the Perplexity mobile-first interactive oval poker table currently in `
 
 ## Roles and isolation
 - **Cactus operator**: manage all charities and events; see cross-charity rollups; oversee table inventory, sales, sponsor contacts, artwork approvals and exceptions; preserve audit history.
-- **Charity leader**: create/configure events and tables, invite/manage up to 12 active volunteers (leader excluded, pending confirmation), edit asking prices and correct sales, view team performance and missing logos.
+- **Charity leader**: create/configure events and tables, invite/manage up to 12 active volunteers (leader excluded; confirmed by owner 2026-11-21), edit asking prices and correct sales, view team performance and missing logos.
 - **Volunteer salesperson**: view all authorized event tables and sponsors, search directory, place pending holds or sell any available spot, automatically record authenticated salesperson, upload artwork on sponsor behalf.
 - **Sponsor**: no account; revocable, scoped upload link only.
 Enforce authorization and charity/event boundaries in backend queries, not just interface visibility.
@@ -42,7 +42,7 @@ Logo needed -> Submitted -> Needs correction -> Approved by Cactus. Secure revoc
 Current minimal Node server is suitable only for public demo. For production add persistent managed Postgres, secure sessions/authentication, migrations, server-side role checks, atomic sale writes, audit trail, secure artwork storage, backups and tests. Keep existing Railway project and GitHub repository; avoid duplicate services and unnecessary add-ons. No secrets in GitHub. Build and test in stages without replacing the approved prototype until end-to-end parity is demonstrated.
 
 ## Open decisions
-Center-only split support; half/quarter asking prices; volunteer cap excluding leader; pending hold exclusivity/expiration; final print geometry. Do not silently assume answers.
+Center-only split support; half/quarter asking prices; pending hold exclusivity/expiration; final print geometry. Do not silently assume answers.
 
 ## Required acceptance tests
 Role isolation, login, charity/event setup, all three table types, ten platinum panels, center subdivisions, pricing overrides, pending/sold concurrency, original salesperson preservation, gross calculation, sponsor search, artwork access/approval, mobile usability, and deployed health checks.
